@@ -5,6 +5,33 @@ author 'Chicle <hola@chicle.dev>'
 description 'ZRP Framework'
 version '0.0.1'
 
-client_scripts {'client/main.lua'}
-server_scripts {'server/main.lua'}
-shared_scripts {'config.lua', 'locale.lua', 'locales/*.lua', 'shared/main.lua'}
+server_scripts {
+  'locale.lua',
+  'locales/*.lua',
+
+  'config.lua',
+  'config.weapons.lua',
+
+  'server/shared.lua', 
+  'server/main.lua', 
+  'server/commands.lua',
+
+  'shared/modules/math.lua',
+  'shared/modules/table.lua',
+  'shared/functions.lua',
+}
+
+client_scripts {
+  'locale.lua',
+  'locales/*.lua',
+
+  'config.lua',
+  'config.weapons.lua',
+
+  'client/shared.lua', 
+  'client/main.lua', 
+
+  'shared/modules/math.lua',
+  'shared/modules/table.lua',
+  'shared/functions.lua'
+}
