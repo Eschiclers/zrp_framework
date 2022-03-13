@@ -9,3 +9,13 @@ CREATE TABLE `users` (
 
 	PRIMARY KEY (`identifier`)
 );
+
+CREATE TABLE `items` (
+	`name` VARCHAR(50) NOT NULL,
+	`label` VARCHAR(50) NOT NULL,
+	`weight` INT NOT NULL DEFAULT 1,
+	`rare` TINYINT NOT NULL DEFAULT 0,
+	`can_remove` TINYINT NOT NULL DEFAULT 1,
+
+	PRIMARY KEY (`name`)
+);

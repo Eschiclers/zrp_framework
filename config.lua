@@ -1,5 +1,5 @@
 Config = {}
-Config.Locale = 'es'
+Config.Locale = 'en'
 Config.MapName = 'Palencia'
 Config.GameType = 'Zombie Roleplay'
 

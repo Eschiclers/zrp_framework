@@ -6,6 +6,9 @@ description 'ZRP Framework'
 version '0.0.1'
 
 server_scripts {
+  '@async/async.lua',
+	'@mysql-async/lib/MySQL.lua',
+
   'locale.lua',
   'locales/*.lua',
 
@@ -13,6 +16,9 @@ server_scripts {
   'config.weapons.lua',
 
   'server/shared.lua', 
+  'server/classes/player.lua',
+  'server/functions.lua',
+  'server/events.lua',
   'server/main.lua', 
   'server/commands.lua',
 
@@ -34,4 +40,9 @@ client_scripts {
   'shared/modules/math.lua',
   'shared/modules/table.lua',
   'shared/functions.lua'
+}
+
+dependencies {
+	'mysql-async',
+	'async'
 }
