@@ -30,7 +30,7 @@ ZRP.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
 		if not command.allowConsole and playerId == 0 then
 			print(('[zrp_framework] [^3WARNING^7] %s'):format(_U('commanderror_console')))
 		else
-			local xPlayer, error = ZRP.GetPlayerFromId(playerId), nil
+			local zPlayer, error = ZRP.GetPlayerFromId(playerId), nil
 
 			if command.suggestion then
 				if command.suggestion.validate then
@@ -102,14 +102,14 @@ ZRP.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
 				if playerId == 0 then
 					print(('[zrp_framework] [^3WARNING^7] %s^7'):format(error))
 				else
-					xPlayer.triggerEvent('chat:addMessage', {args = {'^1SYSTEM', error}})
+					zPlayer.triggerEvent('chat:addMessage', {args = {'^1SYSTEM', error}})
 				end
 			else
-				cb(xPlayer or false, args, function(msg)
+				cb(zPlayer or false, args, function(msg)
 					if playerId == 0 then
 						print(('[zrp_framework] [^3WARNING^7] %s^7'):format(msg))
 					else
-						xPlayer.triggerEvent('chat:addMessage', {args = {'^1SYSTEM', msg}})
+						zPlayer.triggerEvent('chat:addMessage', {args = {'^1SYSTEM', msg}})
 					end
 				end)
 			end
@@ -210,11 +210,11 @@ ZRP.SavePlayer = function(zPlayer, cb)
 
 	table.insert(asyncTasks, function(cb2)
 		MySQL.Async.execute('UPDATE users SET `group` = @group, loadout = @loadout, position = @position, inventory = @inventory WHERE identifier = @identifier', {
-			['@group'] = xPlayer.getGroup(),
-			['@loadout'] = json.encode(xPlayer.getLoadout(true)),
-			['@position'] = json.encode(xPlayer.getCoords()),
-			['@identifier'] = xPlayer.getIdentifier(),
-			['@inventory'] = json.encode(xPlayer.getInventory(true))
+			['@group'] = zPlayer.getGroup(),
+			['@loadout'] = json.encode(zPlayer.getLoadout(true)),
+			['@position'] = json.encode(zPlayer.getCoords()),
+			['@identifier'] = zPlayer.getIdentifier(),
+			['@inventory'] = json.encode(zPlayer.getInventory(true))
 		}, function(rowsChanged)
 			cb2()
 		end)
