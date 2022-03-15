@@ -1,5 +1,3 @@
-ZRP = {}
-
 AddEventHandler('zrp:getSharedObject', function(cb)
 	cb(ZRP)
 end)
