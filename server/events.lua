@@ -349,6 +349,63 @@ AddEventHandler('zrp_framework:onPickup', function(pickupId)
 	end
 end)
 
+RegisterNetEvent('zrp_framework:spawnVehicle')
+AddEventHandler('zrp_framework:spawnVehicle', function(vehicleName)
+	local model = (type(vehicleName) == 'number' and vehicleName or GetHashKey(vehicleName))
+
+	if IsModelInCdimage(model) then
+		local playerPed = PlayerPedId()
+		local playerCoords, playerHeading = GetEntityCoords(playerPed), GetEntityHeading(playerPed)
+
+		ZRP.Game.SpawnVehicle(model, playerCoords, playerHeading, function(vehicle)
+			TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+		end)
+	else
+		TriggerEvent('chat:addMessage', {args = {'^1SYSTEM', 'Invalid vehicle model.'}})
+	end
+end)
+
+RegisterNetEvent('zrp_framework:deleteVehicle')
+AddEventHandler('zrp_framework:deleteVehicle', function(radius)
+	local playerPed = PlayerPedId()
+
+	if radius and tonumber(radius) then
+		radius = tonumber(radius) + 0.01
+		local vehicles = ZRP.Game.GetVehiclesInArea(GetEntityCoords(playerPed), radius)
+
+		for k,entity in ipairs(vehicles) do
+			local attempt = 0
+
+			while not NetworkHasControlOfEntity(entity) and attempt < 100 and DoesEntityExist(entity) do
+				Citizen.Wait(100)
+				NetworkRequestControlOfEntity(entity)
+				attempt = attempt + 1
+			end
+
+			if DoesEntityExist(entity) and NetworkHasControlOfEntity(entity) then
+				ZRP.Game.DeleteVehicle(entity)
+			end
+		end
+	else
+		local vehicle, attempt = ZRP.Game.GetVehicleInDirection(), 0
+
+		if IsPedInAnyVehicle(playerPed, true) then
+			vehicle = GetVehiclePedIsIn(playerPed, false)
+		end
+
+		while not NetworkHasControlOfEntity(vehicle) and attempt < 100 and DoesEntityExist(vehicle) do
+			Citizen.Wait(100)
+			NetworkRequestControlOfEntity(vehicle)
+			attempt = attempt + 1
+		end
+
+		if DoesEntityExist(vehicle) and NetworkHasControlOfEntity(vehicle) then
+			ZRP.Game.DeleteVehicle(vehicle)
+		end
+	end
+end)
+
+
 ZRP.RegisterServerCallback('zrp_framework:getPlayerData', function(source, cb)
 	local zPlayer = ZRP.GetPlayerFromId(source)
 
