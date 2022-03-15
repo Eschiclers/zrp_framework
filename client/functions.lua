@@ -1,8 +1,20 @@
 ZRP = {}
 ZRP.PlayerData = {}
 ZRP.PlayerLoaded= false
+ZRP.CurrentRequestId = 0
+ZRP.ServerCallbacks = {}
+ZRP.TimeoutCallbacks = {}
 
 ZRP.Game = {}
+
+ZRP.SetTimeout = function(msec, cb)
+	table.insert(ZRP.TimeoutCallbacks, {cb = cb, time = GetGameTimer() + msec})
+	return #ZRP.TimeoutCallbacks
+end
+
+ZRP.ClearTimeout = function(i)
+	ZRP.TimeoutCallbacks[i] = nil
+end
 
 ZRP.IsPlayerLoaded = function()
 	return ZRP.PlayerLoaded
@@ -14,6 +26,18 @@ end
 
 ZRP.SetPlayerData = function(key, val)
 	ZRP.PlayerData[key] = val
+end
+
+ZRP.TriggerServerCallback = function(name, cb, ...)
+	ZRP.ServerCallbacks[ZRP.CurrentRequestId] = cb
+
+	TriggerServerEvent('zrp_framework:triggerServerCallback', name, ZRP.CurrentRequestId, ...)
+
+	if ZRP.CurrentRequestId < 65535 then
+		ZRP.CurrentRequestId = ZRP.CurrentRequestId + 1
+	else
+		ZRP.CurrentRequestId = 0
+	end
 end
 
 ZRP.Game.Teleport = function(entity, coords, cb)

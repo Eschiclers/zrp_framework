@@ -123,6 +123,12 @@ AddEventHandler('zrp_framework:restoreLoadout', function()
 	end
 end)
 
+RegisterNetEvent('zrp_framework:serverCallback')
+AddEventHandler('zrp_framework:serverCallback', function(requestId, ...)
+	ZRP.ServerCallbacks[requestId](...)
+	ZRP.ServerCallbacks[requestId] = nil
+end)
+
 RegisterNetEvent('zrp_framework:setMaxWeight')
 AddEventHandler('zrp_framework:setMaxWeight', function(newMaxWeight) 
   ZRP.PlayerData.maxWeight = newMaxWeight 

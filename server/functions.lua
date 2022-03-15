@@ -1,3 +1,24 @@
+ZRP.SetTimeout = function(msec, cb)
+	local id = ZRP.TimeoutCount + 1
+
+	SetTimeout(msec, function()
+		if ZRP.CancelledTimeouts[id] then
+			ZRP.CancelledTimeouts[id] = nil
+		else
+			cb()
+		end
+	end)
+
+	ESX.TimeoutCount = id
+
+	return id
+end
+
+ZRP.ClearTimeout = function(id)
+	ZRP.CancelledTimeouts[id] = true
+end
+
+
 ZRP.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
 	if type(name) == 'table' then
 		for k,v in ipairs(name) do
