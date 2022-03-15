@@ -2,6 +2,7 @@
 function CreatePlayer(playerId, identifier, group, inventory, weight, loadout, name, coords)
 	local self = {}
 
+	self.coords = coords
 	self.group = group
 	self.identifier = identifier
 	self.inventory = inventory
