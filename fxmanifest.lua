@@ -35,6 +35,7 @@ client_scripts {
   'config.weapons.lua',
 
   'client/shared.lua', 
+  'client/entityier.lua',
   'client/functions.lua',
   'client/events.lua',
   'client/main.lua', 
