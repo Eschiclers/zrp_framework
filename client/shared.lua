@@ -1,4 +1,4 @@
-AddEventHandler('zrp:getSharedObject', function(cb)
+AddEventHandler('zrp_framework:getSharedObject', function(cb)
   cb(ZRP)
 end)
 
