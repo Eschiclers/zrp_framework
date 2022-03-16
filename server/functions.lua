@@ -288,3 +288,17 @@ ZRP.SavePlayers = function(cb)
     end
   end)
 end
+
+ZRP.GetItemsFromDb = function(cb)
+  MySQL.Async.fetchAll('SELECT * FROM items', {}, function(result)
+    for k, v in ipairs(result) do
+      ZRP.Items[v.name] = {
+        label = v.label,
+        weight = v.weight,
+        rare = v.rare,
+        canRemove = v.can_remove
+      }
+    end
+    cb(result)
+  end)
+end

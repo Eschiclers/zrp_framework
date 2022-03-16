@@ -373,6 +373,15 @@ AddEventHandler('zrp_framework:onPickup', function(pickupId)
   end
 end)
 
+RegisterServerEvent('zrp_framework:triggerServerCallback')
+AddEventHandler('zrp_framework:triggerServerCallback', function(name, requestId, ...)
+  local playerId = source
+
+  ZRP.TriggerServerCallback(name, requestId, playerId, function(...)
+    TriggerClientEvent('zrp_framework:serverCallback', playerId, requestId, ...)
+  end, ...)
+end)
+
 ZRP.RegisterServerCallback('zrp_framework:getPlayerData', function(source, cb)
   local zPlayer = ZRP.GetPlayerFromId(source)
 
