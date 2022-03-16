@@ -1,7 +1,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'Chicle <hola@chicle.dev>'
+author 'Chicle <hola@chicle.dev> (https://chicle.dev)'
 description 'ZRP Framework'
 version '0.0.1'
 
