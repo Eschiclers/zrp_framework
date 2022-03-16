@@ -1,7 +1,7 @@
 AddEventHandler('zrp:getSharedObject', function(cb)
-	cb(ZRP)
+  cb(ZRP)
 end)
 
 function getSharedObject()
-	return ZRP
+  return ZRP
 end

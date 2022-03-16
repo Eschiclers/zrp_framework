@@ -1,211 +1,218 @@
 RegisterNetEvent('zrp_framework:playerLoaded')
 AddEventHandler('zrp_framework:playerLoaded', function(playerData)
-	ZRP.PlayerLoaded = true
-	ZRP.PlayerData = playerData
+  ZRP.PlayerLoaded = true
+  ZRP.PlayerData = playerData
 
-	-- check if player is coming from loading screen
-	if GetEntityModel(PlayerPedId()) == GetHashKey('PLAYER_ZERO') then
-		local defaultModel = GetHashKey('s_m_y_ranger_01')
-		RequestModel(defaultModel)
+  -- check if player is coming from loading screen
+  if GetEntityModel(PlayerPedId()) == GetHashKey('PLAYER_ZERO') then
+    local defaultModel = GetHashKey('s_m_y_ranger_01')
+    RequestModel(defaultModel)
 
-		while not HasModelLoaded(defaultModel) do
-			Citizen.Wait(10)
-		end
+    while not HasModelLoaded(defaultModel) do
+      Citizen.Wait(10)
+    end
 
-		SetPlayerModel(PlayerId(), defaultModel)
-		SetPedDefaultComponentVariation(PlayerPedId())
-		SetPedRandomComponentVariation(PlayerPedId(), true)
-		SetModelAsNoLongerNeeded(defaultModel)
-	end
+    SetPlayerModel(PlayerId(), defaultModel)
+    SetPedDefaultComponentVariation(PlayerPedId())
+    SetPedRandomComponentVariation(PlayerPedId(), true)
+    SetModelAsNoLongerNeeded(defaultModel)
+  end
 
-	-- freeze the player
-	FreezeEntityPosition(PlayerPedId(), true)
+  -- freeze the player
+  FreezeEntityPosition(PlayerPedId(), true)
 
-	-- enable PVP
-	SetCanAttackFriendly(PlayerPedId(), true, false)
-	NetworkSetFriendlyFireOption(true)
+  -- enable PVP
+  SetCanAttackFriendly(PlayerPedId(), true, false)
+  NetworkSetFriendlyFireOption(true)
 
-	-- disable wanted level
-	ClearPlayerWantedLevel(PlayerId())
-	SetMaxWantedLevel(0)
+  -- disable wanted level
+  ClearPlayerWantedLevel(PlayerId())
+  SetMaxWantedLevel(0)
 
-	ZRP.Game.Teleport(PlayerPedId(), {
-		x = playerData.coords.x,
-		y = playerData.coords.y,
-		z = playerData.coords.z + 0.25,
-		heading = playerData.coords.heading
-	}, function()
-		TriggerServerEvent('zrp_framework:onPlayerSpawn')
-		TriggerEvent('zrp_framework:onPlayerSpawn')
-		TriggerEvent('zrp_framework:restoreLoadout')
+  ZRP.Game.Teleport(PlayerPedId(), {
+    x = playerData.coords.x,
+    y = playerData.coords.y,
+    z = playerData.coords.z + 0.25,
+    heading = playerData.coords.heading
+  }, function()
+    TriggerServerEvent('zrp_framework:onPlayerSpawn')
+    TriggerEvent('zrp_framework:onPlayerSpawn')
+    TriggerEvent('zrp_framework:restoreLoadout')
 
-		Citizen.Wait(4000)
-		ShutdownLoadingScreen()
-		ShutdownLoadingScreenNui()
-		FreezeEntityPosition(PlayerPedId(), false)
-		DoScreenFadeIn(10000)
-		StartServerSyncLoops()
-	end)
+    Citizen.Wait(4000)
+    ShutdownLoadingScreen()
+    ShutdownLoadingScreenNui()
+    FreezeEntityPosition(PlayerPedId(), false)
+    DoScreenFadeIn(10000)
+    StartServerSyncLoops()
+  end)
 
-	TriggerEvent('zrp_framework:loadingScreenOff')
+  TriggerEvent('zrp_framework:loadingScreenOff')
 end)
 
 function StartServerSyncLoops()
-	-- keep track of ammo
-	Citizen.CreateThread(function()
-		while true do
-			Citizen.Wait(0)
+  -- keep track of ammo
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(0)
 
-			if isDead then
-				Citizen.Wait(500)
-			else
-				local playerPed = PlayerPedId()
+      if isDead then
+        Citizen.Wait(500)
+      else
+        local playerPed = PlayerPedId()
 
-				if IsPedShooting(playerPed) then
-					local _,weaponHash = GetCurrentPedWeapon(playerPed, true)
-					local weapon = ZRP.GetWeaponFromHash(weaponHash)
+        if IsPedShooting(playerPed) then
+          local _, weaponHash = GetCurrentPedWeapon(playerPed, true)
+          local weapon = ZRP.GetWeaponFromHash(weaponHash)
 
-					if weapon then
-						local ammoCount = GetAmmoInPedWeapon(playerPed, weaponHash)
-						TriggerServerEvent('zrp_framework:updateWeaponAmmo', weapon.name, ammoCount)
-					end
-				end
-			end
-		end
-	end)
+          if weapon then
+            local ammoCount = GetAmmoInPedWeapon(playerPed, weaponHash)
+            TriggerServerEvent('zrp_framework:updateWeaponAmmo', weapon.name, ammoCount)
+          end
+        end
+      end
+    end
+  end)
 
-	-- sync current player coords with server
-	Citizen.CreateThread(function()
-		local previousCoords = vector3(ZRP.PlayerData.coords.x, ZRP.PlayerData.coords.y, ZRP.PlayerData.coords.z)
+  -- sync current player coords with server
+  Citizen.CreateThread(function()
+    local previousCoords = vector3(ZRP.PlayerData.coords.x, ZRP.PlayerData.coords.y, ZRP.PlayerData.coords.z)
 
-		while true do
-			Citizen.Wait(1000)
-			local playerPed = PlayerPedId()
+    while true do
+      Citizen.Wait(1000)
+      local playerPed = PlayerPedId()
 
-			if DoesEntityExist(playerPed) then
-				local playerCoords = GetEntityCoords(playerPed)
-				local distance = #(playerCoords - previousCoords)
+      if DoesEntityExist(playerPed) then
+        local playerCoords = GetEntityCoords(playerPed)
+        local distance = #(playerCoords - previousCoords)
 
-				if distance > 1 then
-					previousCoords = playerCoords
-					local playerHeading = ZRP.Math.Round(GetEntityHeading(playerPed), 1)
-					local formattedCoords = {x = ZRP.Math.Round(playerCoords.x, 1), y = ZRP.Math.Round(playerCoords.y, 1), z = ZRP.Math.Round(playerCoords.z, 1), heading = playerHeading}
-					TriggerServerEvent('zrp_framework:updateCoords', formattedCoords)
-				end
-			end
-		end
-	end)
+        if distance > 1 then
+          previousCoords = playerCoords
+          local playerHeading = ZRP.Math.Round(GetEntityHeading(playerPed), 1)
+          local formattedCoords = {
+            x = ZRP.Math.Round(playerCoords.x, 1),
+            y = ZRP.Math.Round(playerCoords.y, 1),
+            z = ZRP.Math.Round(playerCoords.z, 1),
+            heading = playerHeading
+          }
+          TriggerServerEvent('zrp_framework:updateCoords', formattedCoords)
+        end
+      end
+    end
+  end)
 end
 
 AddEventHandler('zrp_framework:restoreLoadout', function()
-	local playerPed = PlayerPedId()
-	local ammoTypes = {}
-	RemoveAllPedWeapons(playerPed, true)
+  local playerPed = PlayerPedId()
+  local ammoTypes = {}
+  RemoveAllPedWeapons(playerPed, true)
 
-	for k,v in ipairs(ZRP.PlayerData.loadout) do
-		local weaponName = v.name
-		local weaponHash = GetHashKey(weaponName)
+  for k, v in ipairs(ZRP.PlayerData.loadout) do
+    local weaponName = v.name
+    local weaponHash = GetHashKey(weaponName)
 
-		GiveWeaponToPed(playerPed, weaponHash, 0, false, false)
-		SetPedWeaponTintIndex(playerPed, weaponHash, v.tintIndex)
+    GiveWeaponToPed(playerPed, weaponHash, 0, false, false)
+    SetPedWeaponTintIndex(playerPed, weaponHash, v.tintIndex)
 
-		local ammoType = GetPedAmmoTypeFromWeapon(playerPed, weaponHash)
+    local ammoType = GetPedAmmoTypeFromWeapon(playerPed, weaponHash)
 
-		for k2,v2 in ipairs(v.components) do
-			local componentHash = ZRP.GetWeaponComponent(weaponName, v2).hash
-			GiveWeaponComponentToPed(playerPed, weaponHash, componentHash)
-		end
+    for k2, v2 in ipairs(v.components) do
+      local componentHash = ZRP.GetWeaponComponent(weaponName, v2).hash
+      GiveWeaponComponentToPed(playerPed, weaponHash, componentHash)
+    end
 
-		if not ammoTypes[ammoType] then
-			AddAmmoToPed(playerPed, weaponHash, v.ammo)
-			ammoTypes[ammoType] = true
-		end
-	end
+    if not ammoTypes[ammoType] then
+      AddAmmoToPed(playerPed, weaponHash, v.ammo)
+      ammoTypes[ammoType] = true
+    end
+  end
 end)
 
 RegisterNetEvent('zrp_framework:serverCallback')
 AddEventHandler('zrp_framework:serverCallback', function(requestId, ...)
-	ZRP.ServerCallbacks[requestId](...)
-	ZRP.ServerCallbacks[requestId] = nil
+  ZRP.ServerCallbacks[requestId](...)
+  ZRP.ServerCallbacks[requestId] = nil
 end)
 
 RegisterNetEvent('zrp_framework:setMaxWeight')
-AddEventHandler('zrp_framework:setMaxWeight', function(newMaxWeight) 
-  ZRP.PlayerData.maxWeight = newMaxWeight 
+AddEventHandler('zrp_framework:setMaxWeight', function(newMaxWeight)
+  ZRP.PlayerData.maxWeight = newMaxWeight
 end)
 
-AddEventHandler('zrp_framework:onPlayerSpawn', function() 
-  isDead = false 
+AddEventHandler('zrp_framework:onPlayerSpawn', function()
+  isDead = false
 end)
 
-AddEventHandler('zrp_framework:onPlayerDeath', function() 
-  isDead = true 
+AddEventHandler('zrp_framework:onPlayerDeath', function()
+  isDead = true
 end)
 
 RegisterNetEvent('zrp_framework:teleport')
 AddEventHandler('zrp_framework:teleport', function(coords)
-	local playerPed = PlayerPedId()
+  local playerPed = PlayerPedId()
 
-	-- ensure decmial number
-	coords.x = coords.x + 0.0
-	coords.y = coords.y + 0.0
-	coords.z = coords.z + 0.0
+  -- ensure decmial number
+  coords.x = coords.x + 0.0
+  coords.y = coords.y + 0.0
+  coords.z = coords.z + 0.0
 
-	ZRP.Game.Teleport(playerPed, coords)
+  ZRP.Game.Teleport(playerPed, coords)
 end)
 
 RegisterNetEvent('zrp_framework:spawnVehicle')
 AddEventHandler('zrp_framework:spawnVehicle', function(vehicleName)
-	local model = (type(vehicleName) == 'number' and vehicleName or GetHashKey(vehicleName))
+  local model = (type(vehicleName) == 'number' and vehicleName or GetHashKey(vehicleName))
 
-	if IsModelInCdimage(model) then
-		local playerPed = PlayerPedId()
-		local playerCoords, playerHeading = GetEntityCoords(playerPed), GetEntityHeading(playerPed)
+  if IsModelInCdimage(model) then
+    local playerPed = PlayerPedId()
+    local playerCoords, playerHeading = GetEntityCoords(playerPed), GetEntityHeading(playerPed)
 
-		ZRP.Game.SpawnVehicle(model, playerCoords, playerHeading, function(vehicle)
-			TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
-		end)
-	else
-		TriggerEvent('chat:addMessage', {args = {'^1SYSTEM', 'Invalid vehicle model.'}})
-	end
+    ZRP.Game.SpawnVehicle(model, playerCoords, playerHeading, function(vehicle)
+      TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+    end)
+  else
+    TriggerEvent('chat:addMessage', {
+      args = {'^1SYSTEM', 'Invalid vehicle model.'}
+    })
+  end
 end)
 
 RegisterNetEvent('zrp_framework:deleteVehicle')
 AddEventHandler('zrp_framework:deleteVehicle', function(radius)
-	local playerPed = PlayerPedId()
+  local playerPed = PlayerPedId()
 
-	if radius and tonumber(radius) then
-		radius = tonumber(radius) + 0.01
-		local vehicles = ZRP.Game.GetVehiclesInArea(GetEntityCoords(playerPed), radius)
+  if radius and tonumber(radius) then
+    radius = tonumber(radius) + 0.01
+    local vehicles = ZRP.Game.GetVehiclesInArea(GetEntityCoords(playerPed), radius)
 
-		for k,entity in ipairs(vehicles) do
-			local attempt = 0
+    for k, entity in ipairs(vehicles) do
+      local attempt = 0
 
-			while not NetworkHasControlOfEntity(entity) and attempt < 100 and DoesEntityExist(entity) do
-				Citizen.Wait(100)
-				NetworkRequestControlOfEntity(entity)
-				attempt = attempt + 1
-			end
+      while not NetworkHasControlOfEntity(entity) and attempt < 100 and DoesEntityExist(entity) do
+        Citizen.Wait(100)
+        NetworkRequestControlOfEntity(entity)
+        attempt = attempt + 1
+      end
 
-			if DoesEntityExist(entity) and NetworkHasControlOfEntity(entity) then
-				ZRP.Game.DeleteVehicle(entity)
-			end
-		end
-	else
-		local vehicle, attempt = ZRP.Game.GetVehicleInDirection(), 0
+      if DoesEntityExist(entity) and NetworkHasControlOfEntity(entity) then
+        ZRP.Game.DeleteVehicle(entity)
+      end
+    end
+  else
+    local vehicle, attempt = ZRP.Game.GetVehicleInDirection(), 0
 
-		if IsPedInAnyVehicle(playerPed, true) then
-			vehicle = GetVehiclePedIsIn(playerPed, false)
-		end
+    if IsPedInAnyVehicle(playerPed, true) then
+      vehicle = GetVehiclePedIsIn(playerPed, false)
+    end
 
-		while not NetworkHasControlOfEntity(vehicle) and attempt < 100 and DoesEntityExist(vehicle) do
-			Citizen.Wait(100)
-			NetworkRequestControlOfEntity(vehicle)
-			attempt = attempt + 1
-		end
+    while not NetworkHasControlOfEntity(vehicle) and attempt < 100 and DoesEntityExist(vehicle) do
+      Citizen.Wait(100)
+      NetworkRequestControlOfEntity(vehicle)
+      attempt = attempt + 1
+    end
 
-		if DoesEntityExist(vehicle) and NetworkHasControlOfEntity(vehicle) then
-			ZRP.Game.DeleteVehicle(vehicle)
-		end
-	end
+    if DoesEntityExist(vehicle) and NetworkHasControlOfEntity(vehicle) then
+      ZRP.Game.DeleteVehicle(vehicle)
+    end
+  end
 end)

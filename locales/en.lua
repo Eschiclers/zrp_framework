@@ -3,7 +3,7 @@ Locales['en'] = {
   ['ejemplo'] = 'sample',
 
   ['system'] = '^1SYSTEM',
-  
+
   -- Inventory
   ['inventory'] = 'inventory %s / %s',
   ['use'] = 'use',
@@ -168,5 +168,5 @@ Locales['en'] = {
   ['commanderror_console'] = 'that command cannot be run from console',
   ['commanderror_invalidcommand'] = '^3%s^0 is not a valid command!',
   ['commanderror_invalidplayerid'] = 'there is no player online matching that server id',
-  ['commandgeneric_playerid'] = 'player id',
+  ['commandgeneric_playerid'] = 'player id'
 }

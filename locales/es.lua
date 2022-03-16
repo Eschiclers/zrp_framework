@@ -118,5 +118,5 @@ Locales['es'] = {
   ['tint_army'] = 'army skin',
   ['tint_lspd'] = 'blue skin',
   ['tint_orange'] = 'orange skin',
-  ['tint_platinum'] = 'platinum skin',
+  ['tint_platinum'] = 'platinum skin'
 }
