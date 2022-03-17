@@ -122,6 +122,7 @@ Para terminar con la instalación de las dependencias debes revisar en el reposi
    ```
    Recuerda que es importante que estas líneas se incluyan **DESPUÉS** de las líneas de las dependencias y **ANTES** de los resources que utilicen el framework.
 5. Para configurar el framework, puedes hacerlo desde el archivo `config.lua` dentro de la carpeta que acabas de extraer.
+6. Ejecutar el archivo `zrp_framework.sql` en la base de datos para crear las tablas necesarias.
 
 ### Archivo de configuración
 ```lua
