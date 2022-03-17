@@ -1,5 +1,5 @@
 -- https://github.com/Blumlaut/TrafficAdjuster/blob/master/traffic.lua
-Citizen.CreateThread(function()
+CreateThread(function()
   for i = 1, 16 do
     EnableDispatchService(i, false)
   end
@@ -14,6 +14,6 @@ Citizen.CreateThread(function()
     SetRandomBoats(false)
     SetRandomTrains(false)
     SetGarbageTrucks(false)
-    Citizen.Wait(0)
+    Wait(0)
   end
 end)
