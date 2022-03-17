@@ -302,3 +302,28 @@ ZRP.GetItemsFromDb = function(cb)
     cb(result)
   end)
 end
+
+ZRP.CheckVersion = function()
+  if not Config.CheckVersion then return end
+
+  PerformHttpRequest(('https://api.github.com/repos/%s/releases'):format(GetResourceMetadata(GetCurrentResourceName(), 'repository', 0)), function(code, data, headers)
+    if code ~= 200 then
+      print(('[^5ZRP Framework^7] [^1ERROR^7] No se pudo comprobar la versión'))
+      return
+    end
+
+    local json = json.decode(data)
+
+    local last_version = json[1].tag_name
+    local version = GetResourceMetadata(GetCurrentResourceName(), 'version', 0)
+
+    if last_version > version then
+      print("[^5ZRP Framework] ^3Hay una nueva versión disponible: ^7" .. last_version)
+      print(("[^5ZRP Framework] ^3Descarga la nueva versión desde: ^7https://github.com/%s/releases"):format(GetResourceMetadata(GetCurrentResourceName(), 'repository', 0)))
+    end
+  end)
+
+  -- Espera 8 horas y vuelve a comprobar la versión
+  SetTimeout(8 * 60 * 60 * 1000, ZRP.CheckVersion)
+
+end

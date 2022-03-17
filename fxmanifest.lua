@@ -3,6 +3,7 @@ game 'gta5'
 
 author 'Chicle <hola@chicle.dev> (https://chicle.dev)'
 description 'ZRP Framework'
+repository 'Eschiclers/zrp_demo'
 version '0.0.1'
 
 server_scripts {

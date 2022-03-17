@@ -1,5 +1,6 @@
 Config = {}
 Config.Locale = 'en'
+Config.CheckVersion = true
 Config.MapName = 'Palencia'
 Config.GameType = 'Zombie Roleplay'
 
