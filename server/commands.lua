@@ -56,7 +56,7 @@ end, true, {
     }}
 })
 
-ZRP.RegisterCommand('car', {'admin'}, function(zPlayer, args, showError)
+ZRP.RegisterCommand({'veh', 'vehicle', 'car'}, {'admin'}, function(zPlayer, args, showError)
     zPlayer.triggerEvent('zrp_framework:spawnVehicle', args.car)
     print(args.car)
 end, false, {
